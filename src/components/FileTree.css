@@ -1,0 +1,69 @@
+.file-tree {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary);
+  user-select: none;
+}
+
+.file-tree-header {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.file-tree-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2px 0;
+}
+
+.file-tree-error {
+  padding: var(--sp-3);
+  color: var(--danger);
+  font-size: var(--text-sm);
+}
+
+.tree-item {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  transition: background var(--fast);
+  padding-right: var(--sp-2);
+}
+
+.tree-item:hover {
+  background: var(--bg-hover);
+}
+
+.tree-item.directory .tree-name {
+  color: var(--text-primary);
+}
+
+.tree-icon {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  width: 10px;
+  text-align: center;
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+.tree-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+}

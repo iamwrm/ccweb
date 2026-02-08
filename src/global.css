@@ -1,0 +1,122 @@
+:root {
+  /* ── Backgrounds (neutral dark, no purple) ── */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-tertiary: #181818;
+  --bg-hover: #1f1f1f;
+  --bg-active: #262626;
+
+  /* ── Borders ── */
+  --border: #222222;
+  --border-hover: #333333;
+
+  /* ── Text ── */
+  --text-primary: #ededed;
+  --text-secondary: #888888;
+  --text-tertiary: #555555;
+
+  /* ── Accent (Cloudflare orange) ── */
+  --accent: #f6821f;
+  --accent-hover: #ff9a3e;
+  --accent-muted: rgba(246, 130, 31, 0.1);
+
+  /* ── Semantic ── */
+  --danger: #e5484d;
+  --success: #46a758;
+
+  /* ── Typography ── */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', monospace;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.8125rem;
+  --text-lg: 0.875rem;
+
+  /* ── Spacing ── */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+
+  /* ── Radius ── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  /* ── Transitions ── */
+  --fast: 100ms ease;
+  --normal: 150ms ease;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ── Focus ── */
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* ── App shell ── */
+.app {
+  height: 100%;
+  display: flex;
+}
+
+/* ── Resize handles ── */
+.resize-handle {
+  background: var(--border);
+  transition: background var(--fast);
+}
+.resize-handle:hover,
+.resize-handle[data-resize-handle-active] {
+  background: var(--accent);
+}
+.resize-handle-h {
+  width: 1px;
+}
+.resize-handle-v {
+  height: 1px;
+}

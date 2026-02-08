@@ -1,0 +1,110 @@
+.sidebar {
+  width: 48px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  padding: var(--sp-2) 0;
+  gap: var(--sp-1);
+}
+
+.sidebar-brand {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--accent);
+  padding: var(--sp-1) 0 var(--sp-2);
+  letter-spacing: -0.03em;
+}
+
+.sidebar-workspaces {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  overflow-y: auto;
+  width: 100%;
+  padding: 0 var(--sp-1);
+}
+
+.sidebar-item {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  background: transparent;
+  transition: all var(--fast);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.sidebar-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-item.active {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.sidebar-item-index {
+  font-weight: 500;
+}
+
+.sidebar-item-close {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-active);
+  color: var(--text-secondary);
+  font-size: 9px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.sidebar-item:hover .sidebar-item-close {
+  display: flex;
+}
+
+.sidebar-item-close:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.sidebar-bottom {
+  padding: var(--sp-1) 0;
+}
+
+.sidebar-add {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  color: var(--text-tertiary);
+  transition: all var(--fast);
+}
+
+.sidebar-add:hover {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
