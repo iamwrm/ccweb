@@ -17,6 +17,7 @@ describe('Sidebar', () => {
         onSelect={vi.fn()}
         onClose={vi.fn()}
         onCreate={vi.fn()}
+        onRename={vi.fn()}
       />
     );
 
@@ -33,6 +34,7 @@ describe('Sidebar', () => {
         onSelect={vi.fn()}
         onClose={vi.fn()}
         onCreate={vi.fn()}
+        onRename={vi.fn()}
       />
     );
 
@@ -51,6 +53,7 @@ describe('Sidebar', () => {
         onSelect={onSelect}
         onClose={vi.fn()}
         onCreate={vi.fn()}
+        onRename={vi.fn()}
       />
     );
 
@@ -70,6 +73,7 @@ describe('Sidebar', () => {
         onSelect={onSelect}
         onClose={onClose}
         onCreate={vi.fn()}
+        onRename={vi.fn()}
       />
     );
 
@@ -89,6 +93,7 @@ describe('Sidebar', () => {
         onSelect={vi.fn()}
         onClose={vi.fn()}
         onCreate={onCreate}
+        onRename={vi.fn()}
       />
     );
 

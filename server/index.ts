@@ -29,13 +29,14 @@ const terminalManager = new TerminalManager(PROJECT_ROOT);
 wss.on('connection', (ws, req) => {
   const url = new URL(req.url || '', `http://${req.headers.host}`);
   const sessionId = url.searchParams.get('session');
+  const cwd = url.searchParams.get('cwd') || undefined;
 
   if (!sessionId) {
     ws.close(4000, 'Missing session ID');
     return;
   }
 
-  terminalManager.attach(sessionId, ws);
+  terminalManager.attach(sessionId, ws, cwd);
 });
 
 server.listen(PORT, () => {

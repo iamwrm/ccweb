@@ -8,6 +8,7 @@ interface Session {
   lastActivity: number;
   cols: number;
   rows: number;
+  cwd: string;
 }
 
 const ORPHAN_TIMEOUT = 5 * 60 * 1000; // 5 minutes
@@ -16,20 +17,21 @@ export class TerminalManager {
   private sessions = new Map<string, Session>();
   private cleanupTimer: ReturnType<typeof setInterval>;
 
-  constructor(private cwd: string) {
+  constructor(private defaultCwd: string) {
     this.cleanupTimer = setInterval(() => this.sweep(), 30_000);
   }
 
-  attach(sessionId: string, ws: WebSocket): void {
+  attach(sessionId: string, ws: WebSocket, cwd?: string): void {
     let session = this.sessions.get(sessionId);
 
     if (!session) {
+      const sessionCwd = cwd || this.defaultCwd;
       const shell = process.env.SHELL || '/bin/bash';
       const p = pty.spawn(shell, [], {
         name: 'xterm-256color',
         cols: 80,
         rows: 24,
-        cwd: this.cwd,
+        cwd: sessionCwd,
         env: { ...process.env, TERM: 'xterm-256color' } as Record<string, string>,
       });
 
@@ -40,6 +42,7 @@ export class TerminalManager {
         lastActivity: Date.now(),
         cols: 80,
         rows: 24,
+        cwd: sessionCwd,
       };
 
       p.onData((data: string) => {
@@ -106,6 +109,11 @@ export class TerminalManager {
 
   getSession(sessionId: string): Session | undefined {
     return this.sessions.get(sessionId);
+  }
+
+  getCwd(sessionId: string): string {
+    const session = this.sessions.get(sessionId);
+    return session ? session.cwd : this.defaultCwd;
   }
 
   getSessions(): Session[] {

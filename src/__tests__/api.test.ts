@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fetchFiles, fetchFile } from '../lib/api';
+import { fetchFiles, fetchFile, saveFile } from '../lib/api';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -52,5 +52,42 @@ describe('fetchFile', () => {
   it('throws on non-OK response', async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, status: 403 });
     await expect(fetchFile('../secret')).rejects.toThrow('Failed to fetch file: 403');
+  });
+});
+
+describe('saveFile', () => {
+  it('sends PUT with correct body', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ ok: true, path: 'main.ts', size: 10 }),
+    });
+
+    await saveFile('main.ts', 'new content');
+    expect(mockFetch).toHaveBeenCalledWith('/api/file', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: 'main.ts', content: 'new content' }),
+    });
+  });
+
+  it('includes root in body when provided', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ ok: true, path: 'main.ts', size: 10 }),
+    });
+
+    await saveFile('main.ts', 'content', '/custom/root');
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+    expect(body.root).toBe('/custom/root');
+  });
+
+  it('throws on non-OK response with error message', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve({ error: 'Access denied' }),
+    });
+
+    await expect(saveFile('secret.txt', 'x')).rejects.toThrow('Access denied');
   });
 });

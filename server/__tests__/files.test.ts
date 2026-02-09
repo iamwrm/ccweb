@@ -159,3 +159,66 @@ describe('GET /api/file', () => {
     expect(res.status).toBe(413);
   });
 });
+
+describe('PUT /api/file', () => {
+  it('saves file content and returns ok', async () => {
+    const res = await request(app)
+      .put('/api/file')
+      .send({ path: 'README.md', content: '# Updated' });
+    expect(res.status).toBe(200);
+    expect(res.body.ok).toBe(true);
+    expect(res.body.path).toBe('README.md');
+    expect(typeof res.body.size).toBe('number');
+  });
+
+  it('persists content to disk', async () => {
+    await request(app)
+      .put('/api/file')
+      .send({ path: 'src/main.ts', content: 'console.log("updated");' });
+
+    const content = await fs.readFile(path.join(testDir, 'src/main.ts'), 'utf-8');
+    expect(content).toBe('console.log("updated");');
+  });
+
+  it('returns 400 when path is missing', async () => {
+    const res = await request(app)
+      .put('/api/file')
+      .send({ content: 'hello' });
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when content is missing', async () => {
+    const res = await request(app)
+      .put('/api/file')
+      .send({ path: 'README.md' });
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects path traversal', async () => {
+    const res = await request(app)
+      .put('/api/file')
+      .send({ path: '../../../etc/passwd', content: 'hacked' });
+    expect(res.status).toBe(403);
+  });
+
+  it('returns 404 for nonexistent file', async () => {
+    const res = await request(app)
+      .put('/api/file')
+      .send({ path: 'nonexistent.txt', content: 'hello' });
+    expect(res.status).toBe(404);
+  });
+
+  it('returns 413 for content larger than 1MB', async () => {
+    const res = await request(app)
+      .put('/api/file')
+      .send({ path: 'README.md', content: 'x'.repeat(1_100_000) });
+    expect(res.status).toBe(413);
+  });
+
+  it('rejects writing to a directory', async () => {
+    const res = await request(app)
+      .put('/api/file')
+      .send({ path: 'src', content: 'hello' });
+    expect(res.status).toBe(400);
+  });
+});

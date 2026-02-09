@@ -10,17 +10,22 @@ interface TreeNode extends FileEntry {
 
 interface FileTreeProps {
   onFileSelect: (path: string) => void;
+  root?: string;
 }
 
-export function FileTree({ onFileSelect }: FileTreeProps) {
+export function FileTree({ onFileSelect, root }: FileTreeProps) {
   const [tree, setTree] = useState<TreeNode[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchFiles('.')
+    setTree([]);
+    setError(null);
+    const args: [string, ...string[]] = ['.'];
+    if (root) args.push(root);
+    fetchFiles(...args)
       .then(entries => setTree(entries.map(e => ({ ...e }))))
       .catch(err => setError(err.message));
-  }, []);
+  }, [root]);
 
   const toggleDir = useCallback(async (nodePath: string) => {
     // First check if already expanded — just collapse
@@ -41,7 +46,9 @@ export function FileTree({ onFileSelect }: FileTreeProps) {
     if (node?.isExpanded || node?.children) return;
 
     try {
-      const entries = await fetchFiles(nodePath);
+      const args: [string, ...string[]] = [nodePath];
+      if (root) args.push(root);
+      const entries = await fetchFiles(...args);
       setTree(prev =>
         updateNode(prev, nodePath, {
           children: entries.map(e => ({ ...e })),
@@ -52,7 +59,7 @@ export function FileTree({ onFileSelect }: FileTreeProps) {
     } catch {
       setTree(prev => updateNode(prev, nodePath, { isLoading: false }));
     }
-  }, [tree]);
+  }, [tree, root]);
 
   const handleClick = useCallback((node: TreeNode) => {
     if (node.type === 'directory') {

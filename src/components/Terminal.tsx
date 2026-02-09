@@ -3,7 +3,7 @@ import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import './Terminal.css';
 
-const THEME = {
+const DARK_THEME = {
   background: '#0a0a0a',
   foreground: '#ededed',
   cursor: '#f6821f',
@@ -26,12 +26,37 @@ const THEME = {
   brightWhite: '#ffffff',
 };
 
+const LIGHT_THEME = {
+  background: '#ffffff',
+  foreground: '#1a1a1a',
+  cursor: '#e0710a',
+  selectionBackground: 'rgba(224, 113, 10, 0.2)',
+  black: '#1a1a1a',
+  red: '#cd2b31',
+  green: '#2d7d3e',
+  yellow: '#b8860b',
+  blue: '#2563eb',
+  magenta: '#7c3aed',
+  cyan: '#0891b2',
+  white: '#f5f5f5',
+  brightBlack: '#666666',
+  brightRed: '#e5484d',
+  brightGreen: '#46a758',
+  brightYellow: '#d4a017',
+  brightBlue: '#3b82f6',
+  brightMagenta: '#8b5cf6',
+  brightCyan: '#06b6d4',
+  brightWhite: '#ffffff',
+};
+
 interface TerminalPanelProps {
   sessionId: string;
   visible: boolean;
+  cwd?: string;
+  theme?: 'dark' | 'light';
 }
 
-export function TerminalPanel({ sessionId, visible }: TerminalPanelProps) {
+export function TerminalPanel({ sessionId, visible, cwd, theme = 'dark' }: TerminalPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const termRef = useRef<Terminal | null>(null);
@@ -47,7 +72,7 @@ export function TerminalPanel({ sessionId, visible }: TerminalPanelProps) {
       cursorBlink: true,
       cursorStyle: 'bar',
       scrollback: 10000,
-      theme: THEME,
+      theme: theme === 'light' ? LIGHT_THEME : DARK_THEME,
       allowProposedApi: true,
     });
 
@@ -56,7 +81,9 @@ export function TerminalPanel({ sessionId, visible }: TerminalPanelProps) {
 
     // WebSocket connection
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const ws = new WebSocket(`${protocol}//${location.host}/ws?session=${sessionId}`);
+    let wsUrl = `${protocol}//${location.host}/ws?session=${sessionId}`;
+    if (cwd) wsUrl += `&cwd=${encodeURIComponent(cwd)}`;
+    const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -110,6 +137,13 @@ export function TerminalPanel({ sessionId, visible }: TerminalPanelProps) {
       term.dispose();
     };
   }, [sessionId]);
+
+  // Update terminal theme dynamically
+  useEffect(() => {
+    if (termRef.current) {
+      termRef.current.options.theme = theme === 'light' ? LIGHT_THEME : DARK_THEME;
+    }
+  }, [theme]);
 
   return (
     <div

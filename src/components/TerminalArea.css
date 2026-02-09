@@ -1,0 +1,46 @@
+/* ── Terminal area wrapper ── */
+.terminal-area {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.terminal-area-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Split layout resize handles ── */
+.terminal-split-handle-h {
+  width: 3px;
+  background: var(--border);
+  transition: background var(--fast);
+  cursor: col-resize;
+}
+
+.terminal-split-handle-h:hover,
+.terminal-split-handle-h[data-resize-handle-active] {
+  background: var(--accent);
+}
+
+.terminal-split-handle-v {
+  height: 3px;
+  background: var(--border);
+  transition: background var(--fast);
+  cursor: row-resize;
+}
+
+.terminal-split-handle-v:hover,
+.terminal-split-handle-v[data-resize-handle-active] {
+  background: var(--accent);
+}
+
+/* ── Terminal pane wrapper inside splits ── */
+.terminal-pane {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}

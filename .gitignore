@@ -2,3 +2,25 @@ node_modules/
 dist/
 dist-server/
 *.tsbuildinfo
+
+# Environment
+.env
+.env.*
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/

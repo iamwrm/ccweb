@@ -1,0 +1,109 @@
+/* ── Terminal tab bar ── */
+.terminal-tabs {
+  height: 28px;
+  display: flex;
+  align-items: stretch;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 0;
+}
+
+.terminal-tabs::-webkit-scrollbar {
+  height: 0;
+}
+
+/* ── Individual tab ── */
+.terminal-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--fast);
+  position: relative;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.terminal-tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.terminal-tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Close button on tab ── */
+.terminal-tab-close {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: 9px;
+  color: var(--text-tertiary);
+  transition: all var(--fast);
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+.terminal-tab:hover .terminal-tab-close {
+  opacity: 1;
+}
+
+.terminal-tab-close:hover {
+  background: var(--danger);
+  color: white;
+}
+
+/* ── Actions area (right side of tab bar) ── */
+.terminal-tabs-actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 0 var(--sp-1);
+  gap: 2px;
+}
+
+.terminal-tabs-btn {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  transition: all var(--fast);
+}
+
+.terminal-tabs-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.terminal-tabs-btn[title="Split vertical"]:hover,
+.terminal-tabs-btn[title="Split horizontal"]:hover {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.terminal-tabs-btn[title="New terminal"]:hover {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
