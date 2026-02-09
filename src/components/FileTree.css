@@ -53,11 +53,22 @@
 }
 
 .tree-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tree-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tree-icon-loading {
   font-family: var(--font-mono);
   font-size: 9px;
-  width: 10px;
-  text-align: center;
-  flex-shrink: 0;
   color: var(--text-tertiary);
 }
 
@@ -66,4 +77,33 @@
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: var(--font-mono);
+}
+
+.file-tree-context-menu {
+  position: fixed;
+  min-width: 200px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  padding: 4px;
+  z-index: 1000;
+}
+
+.file-tree-context-item {
+  width: 100%;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-align: left;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.file-tree-context-item:hover {
+  background: var(--bg-hover);
 }

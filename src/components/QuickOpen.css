@@ -1,0 +1,101 @@
+.quick-open-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  padding-top: 15vh;
+}
+
+.quick-open {
+  width: 500px;
+  max-height: 400px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  align-self: flex-start;
+}
+
+.quick-open-input {
+  width: 100%;
+  padding: var(--sp-3);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  outline: none;
+}
+
+.quick-open-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.quick-open-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-1) 0;
+}
+
+.quick-open-item {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 var(--sp-3);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.quick-open-item.selected {
+  background: var(--accent-muted);
+  color: var(--text-primary);
+}
+
+.quick-open-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.quick-open-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.quick-open-filename {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-open-filename mark {
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.quick-open-dir {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.quick-open-empty {
+  padding: var(--sp-4);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+}

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import fs from 'fs/promises';
@@ -220,5 +220,76 @@ describe('PUT /api/file', () => {
       .put('/api/file')
       .send({ path: 'src', content: 'hello' });
     expect(res.status).toBe(400);
+  });
+});
+
+describe('PATCH /api/file/rename', () => {
+  beforeEach(async () => {
+    await fs.mkdir(path.join(testDir, 'src'), { recursive: true });
+    await fs.mkdir(path.join(testDir, 'src', 'components'), { recursive: true });
+    await fs.writeFile(path.join(testDir, 'README.md'), '# Test Project');
+    await fs.writeFile(path.join(testDir, 'package.json'), '{"name":"test"}');
+    await fs.writeFile(path.join(testDir, 'src', 'main.ts'), 'console.log("hello");');
+  });
+
+  it('renames a file and returns ok', async () => {
+    const res = await request(app)
+      .patch('/api/file/rename')
+      .send({ path: 'README.md', newPath: 'README-renamed.md' });
+    expect(res.status).toBe(200);
+    expect(res.body.ok).toBe(true);
+    expect(res.body.path).toBe('README-renamed.md');
+  });
+
+  it('persists file rename to disk', async () => {
+    await request(app)
+      .patch('/api/file/rename')
+      .send({ path: 'src/main.ts', newPath: 'src/main-renamed.ts' });
+
+    await expect(fs.stat(path.join(testDir, 'src', 'main.ts'))).rejects.toThrow();
+    await expect(fs.stat(path.join(testDir, 'src', 'main-renamed.ts'))).resolves.toBeDefined();
+  });
+
+  it('renames a directory', async () => {
+    const res = await request(app)
+      .patch('/api/file/rename')
+      .send({ path: 'src/components', newPath: 'src/ui' });
+    expect(res.status).toBe(200);
+    await expect(fs.stat(path.join(testDir, 'src', 'ui'))).resolves.toBeDefined();
+  });
+
+  it('returns 400 when path is missing', async () => {
+    const res = await request(app)
+      .patch('/api/file/rename')
+      .send({ newPath: 'foo.txt' });
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when newPath is missing', async () => {
+    const res = await request(app)
+      .patch('/api/file/rename')
+      .send({ path: 'README.md' });
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects path traversal', async () => {
+    const res = await request(app)
+      .patch('/api/file/rename')
+      .send({ path: '../../../etc/passwd', newPath: 'x' });
+    expect(res.status).toBe(403);
+  });
+
+  it('returns 404 for nonexistent source path', async () => {
+    const res = await request(app)
+      .patch('/api/file/rename')
+      .send({ path: 'nope.txt', newPath: 'still-nope.txt' });
+    expect(res.status).toBe(404);
+  });
+
+  it('returns 409 when target already exists', async () => {
+    const res = await request(app)
+      .patch('/api/file/rename')
+      .send({ path: 'README.md', newPath: 'package.json' });
+    expect(res.status).toBe(409);
   });
 });

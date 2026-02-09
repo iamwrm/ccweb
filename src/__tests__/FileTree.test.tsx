@@ -5,13 +5,22 @@ import { FileTree } from '../components/FileTree';
 // Mock the api module
 vi.mock('../lib/api', () => ({
   fetchFiles: vi.fn(),
+  renameFile: vi.fn(),
 }));
 
-import { fetchFiles } from '../lib/api';
+import { fetchFiles, renameFile } from '../lib/api';
 const mockFetchFiles = vi.mocked(fetchFiles);
+const mockRenameFile = vi.mocked(renameFile);
+const mockWriteText = vi.fn();
 
 beforeEach(() => {
   mockFetchFiles.mockReset();
+  mockRenameFile.mockReset();
+  mockWriteText.mockReset();
+  Object.defineProperty(navigator, 'clipboard', {
+    value: { writeText: mockWriteText },
+    configurable: true,
+  });
 });
 
 const rootEntries = [
@@ -72,7 +81,21 @@ describe('FileTree', () => {
     });
 
     fireEvent.click(screen.getByText('README.md'));
-    expect(onFileSelect).toHaveBeenCalledWith('README.md');
+    expect(onFileSelect).toHaveBeenCalledWith('README.md', { pinned: false });
+  });
+
+  it('opens file as pinned on double click', async () => {
+    mockFetchFiles.mockResolvedValueOnce(rootEntries);
+    const onFileSelect = vi.fn();
+
+    render(<FileTree onFileSelect={onFileSelect} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('README.md')).toBeInTheDocument();
+    });
+
+    fireEvent.doubleClick(screen.getByText('README.md'));
+    expect(onFileSelect).toHaveBeenCalledWith('README.md', { pinned: true });
   });
 
   it('shows Explorer header', async () => {
@@ -90,5 +113,76 @@ describe('FileTree', () => {
     await waitFor(() => {
       expect(screen.getByText('Network error')).toBeInTheDocument();
     });
+  });
+
+  it('opens context menu on right click', async () => {
+    mockFetchFiles.mockResolvedValueOnce(rootEntries);
+    render(<FileTree onFileSelect={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('README.md')).toBeInTheDocument();
+    });
+
+    fireEvent.contextMenu(screen.getByText('README.md'));
+    expect(screen.getByRole('button', { name: 'Copy Path' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Copy Relative Path' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Rename' })).toBeInTheDocument();
+  });
+
+  it('copies absolute path from context menu', async () => {
+    mockFetchFiles.mockResolvedValueOnce(rootEntries);
+    render(<FileTree onFileSelect={vi.fn()} root="/tmp/workspace" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('README.md')).toBeInTheDocument();
+    });
+
+    fireEvent.contextMenu(screen.getByText('README.md'));
+    fireEvent.click(screen.getByRole('button', { name: 'Copy Path' }));
+
+    await waitFor(() => {
+      expect(mockWriteText).toHaveBeenCalledWith('/tmp/workspace/README.md');
+    });
+  });
+
+  it('copies relative path from context menu', async () => {
+    mockFetchFiles.mockResolvedValueOnce(rootEntries);
+    render(<FileTree onFileSelect={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('README.md')).toBeInTheDocument();
+    });
+
+    fireEvent.contextMenu(screen.getByText('README.md'));
+    fireEvent.click(screen.getByRole('button', { name: 'Copy Relative Path' }));
+
+    await waitFor(() => {
+      expect(mockWriteText).toHaveBeenCalledWith('README.md');
+    });
+  });
+
+  it('renames entry from context menu and refreshes tree', async () => {
+    mockFetchFiles
+      .mockResolvedValueOnce(rootEntries)
+      .mockResolvedValueOnce(rootEntries);
+    mockRenameFile.mockResolvedValueOnce({ ok: true, path: 'README-renamed.md' });
+
+    const promptSpy = vi.spyOn(window, 'prompt').mockReturnValueOnce('README-renamed.md');
+
+    render(<FileTree onFileSelect={vi.fn()} root="/tmp/workspace" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('README.md')).toBeInTheDocument();
+    });
+
+    fireEvent.contextMenu(screen.getByText('README.md'));
+    fireEvent.click(screen.getByRole('button', { name: 'Rename' }));
+
+    await waitFor(() => {
+      expect(mockRenameFile).toHaveBeenCalledWith('README.md', 'README-renamed.md', '/tmp/workspace');
+    });
+    expect(mockFetchFiles).toHaveBeenNthCalledWith(2, '.', '/tmp/workspace');
+
+    promptSpy.mockRestore();
   });
 });

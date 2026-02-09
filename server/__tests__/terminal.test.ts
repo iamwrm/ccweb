@@ -10,34 +10,7 @@ afterEach(() => {
   }
 });
 
-// Minimal mock WebSocket for testing without a real connection
-function createMockWs() {
-  const listeners: Record<string, ((...args: unknown[]) => void)[]> = {};
-  return {
-    readyState: 1, // OPEN
-    send: (data: string) => {
-      // capture sent data
-      (mockWs as any)._sent.push(data);
-    },
-    close: (_code?: number, _reason?: string) => {
-      mockWs.readyState = 3; // CLOSED
-    },
-    on: (event: string, cb: (...args: unknown[]) => void) => {
-      if (!listeners[event]) listeners[event] = [];
-      listeners[event].push(cb);
-    },
-    _sent: [] as string[],
-    _listeners: listeners,
-    emit: (event: string, ...args: unknown[]) => {
-      (listeners[event] || []).forEach(cb => cb(...args));
-    },
-  };
-  var mockWs: ReturnType<typeof createMockWs>;
-  // @ts-expect-error -- assign for reference in send()
-  mockWs = arguments.callee(); // won't actually recurse, see below
-}
-
-// Better mock that actually works
+// Mock WebSocket for testing without a real connection
 function makeMockWs() {
   const listeners: Record<string, ((...args: unknown[]) => void)[]> = {};
   const ws = {

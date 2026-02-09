@@ -1,0 +1,121 @@
+.pane-header {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 0 var(--sp-2);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+}
+
+.pane-header:active {
+  cursor: grabbing;
+}
+
+.pane-header.active {
+  border-bottom-color: var(--accent);
+}
+
+/* Drop zone indicators */
+.pane-header.drop-left { box-shadow: inset 3px 0 0 var(--accent); }
+.pane-header.drop-right { box-shadow: inset -3px 0 0 var(--accent); }
+.pane-header.drop-top { box-shadow: inset 0 3px 0 var(--accent); }
+.pane-header.drop-bottom { box-shadow: inset 0 -3px 0 var(--accent); }
+.pane-header.drop-center { background: var(--accent-muted); }
+
+.pane-header-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pane-header-icon {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.pane-header-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.pane-header-text {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pane-header.active .pane-header-text {
+  color: var(--text-primary);
+}
+
+.pane-header-dirty {
+  color: var(--accent);
+}
+
+.pane-header-status {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.pane-header-status.saved {
+  color: var(--success);
+}
+
+.pane-header-status.error {
+  color: var(--danger);
+}
+
+.pane-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.pane-header-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--fast), background var(--fast);
+}
+
+.pane-header-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.pane-header-btn.close:hover {
+  color: var(--danger);
+}
+
+.pane-header-btn.vim-toggle {
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  width: auto;
+  padding: 0 4px;
+  letter-spacing: 0.5px;
+}
+
+.pane-header-btn.vim-toggle.active {
+  color: var(--accent);
+}

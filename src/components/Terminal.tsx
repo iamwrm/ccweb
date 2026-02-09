@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Terminal } from '@xterm/xterm';
+import { createFileLinkProvider } from '../lib/terminalLinks';
 import '@xterm/xterm/css/xterm.css';
 import './Terminal.css';
 
@@ -54,13 +55,16 @@ interface TerminalPanelProps {
   visible: boolean;
   cwd?: string;
   theme?: 'dark' | 'light';
+  onOpenFile?: (filePath: string) => void;
 }
 
-export function TerminalPanel({ sessionId, visible, cwd, theme = 'dark' }: TerminalPanelProps) {
+export function TerminalPanel({ sessionId, visible, cwd, theme = 'dark', onOpenFile }: TerminalPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const termRef = useRef<Terminal | null>(null);
   const observerRef = useRef<ResizeObserver | null>(null);
+  const onOpenFileRef = useRef(onOpenFile);
+  onOpenFileRef.current = onOpenFile;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -79,6 +83,11 @@ export function TerminalPanel({ sessionId, visible, cwd, theme = 'dark' }: Termi
     term.open(container);
     termRef.current = term;
 
+    // Register file link provider for Ctrl/Cmd+Click
+    term.registerLinkProvider(createFileLinkProvider(term, (path) => {
+      onOpenFileRef.current?.(path);
+    }));
+
     // WebSocket connection
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
     let wsUrl = `${protocol}//${location.host}/ws?session=${sessionId}`;
@@ -94,8 +103,12 @@ export function TerminalPanel({ sessionId, visible, cwd, theme = 'dark' }: Termi
       term.write(typeof e.data === 'string' ? e.data : '');
     };
 
-    ws.onclose = () => {
-      term.write('\r\n\x1b[90m[session disconnected]\x1b[0m\r\n');
+    ws.onclose = (e) => {
+      if (e.code === 4001) {
+        term.write('\r\n\x1b[31m[authentication required - reload page]\x1b[0m\r\n');
+      } else {
+        term.write('\r\n\x1b[90m[session disconnected]\x1b[0m\r\n');
+      }
     };
 
     term.onData((data) => {
@@ -137,6 +150,15 @@ export function TerminalPanel({ sessionId, visible, cwd, theme = 'dark' }: Termi
       term.dispose();
     };
   }, [sessionId]);
+
+  // Refresh terminal buffer when becoming visible (xterm canvas doesn't repaint from display:none)
+  useEffect(() => {
+    if (visible && termRef.current) {
+      const term = termRef.current;
+      // Refresh all rows so the canvas redraws the existing buffer
+      term.refresh(0, term.rows - 1);
+    }
+  }, [visible]);
 
   // Update terminal theme dynamically
   useEffect(() => {

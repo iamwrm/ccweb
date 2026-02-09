@@ -1,0 +1,134 @@
+.tile-renderer {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.tile-pane {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tile-pane.tile-drop-center { box-shadow: inset 0 0 0 2px var(--accent); }
+.tile-pane.tile-drop-left { box-shadow: inset 3px 0 0 var(--accent); }
+.tile-pane.tile-drop-right { box-shadow: inset -3px 0 0 var(--accent); }
+.tile-pane.tile-drop-top { box-shadow: inset 0 3px 0 var(--accent); }
+.tile-pane.tile-drop-bottom { box-shadow: inset 0 -3px 0 var(--accent); }
+
+.tile-pane-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.terminal-tabs {
+  height: 30px;
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-tertiary);
+}
+
+.terminal-tab {
+  min-width: 88px;
+  max-width: 180px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px 0 10px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+
+.terminal-tab:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.terminal-tab.active {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.terminal-tab-name {
+  min-width: 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.terminal-tab-close {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-size: 10px;
+}
+
+.terminal-tab-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.terminal-tab-add {
+  width: 28px;
+  min-width: 28px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.terminal-tab-add:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tile-pane-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+}
+
+.tile-split-handle-h {
+  width: 3px;
+  background: var(--border);
+  transition: background var(--fast);
+  cursor: col-resize;
+}
+
+.tile-split-handle-h:hover,
+.tile-split-handle-h[data-resize-handle-active] {
+  background: var(--accent);
+}
+
+.tile-split-handle-v {
+  height: 3px;
+  background: var(--border);
+  transition: background var(--fast);
+  cursor: row-resize;
+}
+
+.tile-split-handle-v:hover,
+.tile-split-handle-v[data-resize-handle-active] {
+  background: var(--accent);
+}

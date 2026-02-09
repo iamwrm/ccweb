@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fetchFiles, fetchFile, saveFile } from '../lib/api';
+import { fetchFiles, fetchFile, saveFile, renameFile } from '../lib/api';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -89,5 +89,42 @@ describe('saveFile', () => {
     });
 
     await expect(saveFile('secret.txt', 'x')).rejects.toThrow('Access denied');
+  });
+});
+
+describe('renameFile', () => {
+  it('sends PATCH with correct body', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ ok: true, path: 'src/new.ts' }),
+    });
+
+    await renameFile('src/old.ts', 'src/new.ts');
+    expect(mockFetch).toHaveBeenCalledWith('/api/file/rename', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: 'src/old.ts', newPath: 'src/new.ts' }),
+    });
+  });
+
+  it('includes root in body when provided', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ ok: true, path: 'src/new.ts' }),
+    });
+
+    await renameFile('src/old.ts', 'src/new.ts', '/custom/root');
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+    expect(body.root).toBe('/custom/root');
+  });
+
+  it('throws on non-OK response with error message', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      json: () => Promise.resolve({ error: 'Target already exists' }),
+    });
+
+    await expect(renameFile('a.ts', 'b.ts')).rejects.toThrow('Target already exists');
   });
 });
